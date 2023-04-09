@@ -13,16 +13,13 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#define SIZE 4096
 
 int main(){
-	const int SIZE = 4096;
-	const char *name = "OS";
-	const char *message0= "Studying ";
-	const char *message1= "Operating Systems ";
-	const char *message2= "Is Fun!";
+	const char *name = "esteira_B";
 
 	int shm_fd;
-	void *ptr;
+	int *ptr;
 
 	/* create the shared memory segment */
 	shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);
@@ -42,12 +39,13 @@ int main(){
  	 *
 	 * Note we must increment the value of ptr after each write.
 	 */
-	sprintf(ptr,"%s",message0);
-	ptr += strlen(message0);
-	sprintf(ptr,"%s",message1);
-	ptr += strlen(message1);
-	sprintf(ptr,"%s",message2);
-	ptr += strlen(message2);
+	int number_of_items = 0;
+	while(1){
+		number_of_items++;
+		printf("Total items: %d\n", number_of_items);
+		*ptr = number_of_items;
+		sleep(1);
+	}
 
 	return 0;
 }
