@@ -6,16 +6,23 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <time.h>
 
 #define ESTEIRA2_PATH "/tmp/esteira2"
 #define ESTEIRA1_PATH "/tmp/esteira1"
 
 int main()
 {
-    int sockfd1,sockfd2, newsockfd1,newsockfd2, len,peso=0;
+    clock_t inicio, fim;
+    float tempo_execucao;
+    int flag = 0;
+    int sockfd1,sockfd2, newsockfd1,newsockfd2, len,peso=0, cont=0;
     struct sockaddr_un local, remote;
     char buffer1[1024],buffer2[1024];
 
+
+    
+   
     // Create socket
     sockfd1 = socket(AF_UNIX, SOCK_STREAM, 0);
     if (sockfd1 < 0)
@@ -110,9 +117,9 @@ int main()
     }
 
     //printf("Cliente conectado!\n");
-
+     inicio = clock(); // registra o tempo de início
       //laço onde os dados dos buffers serão recebidos e calculados
-   while(1){
+   while(!flag){
      // Read data from client
         if (read(newsockfd1, buffer1, sizeof(buffer1)) < 0)
         {
@@ -128,12 +135,20 @@ int main()
             close(sockfd2);
             return 1;
         }
+        system("clear");
+        printf("numero de itens: %d\n", cont+1);
 
+        if(cont>=9){
+            printf("O peso total é : %d\n",peso);
+            
+            flag=1;
+        }
+        cont+=3;
         peso += atoi(buffer1)+atoi(buffer2);
         sleep(1);
         peso += atoi(buffer2);
         sleep(1);
-        printf("Dado recebido: %d\n", peso);
+        
    }
 
     // Close sockets and exit
@@ -142,5 +157,13 @@ int main()
     close(newsockfd2);
     close(sockfd2);
 
+
+    fim = clock(); // registra o tempo de fim
+
+    tempo_execucao = (float)(fim - inicio)/CLOCKS_PER_SEC; // calcula o tempo de processamento em segundos
+
+    printf("Tempo de processamento: %f segundos\n", tempo_execucao);
+
     return 0;
+
 }
