@@ -11,11 +11,12 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <time.h>
 #define SIZE 4096
-#define MAX_COMPUTATIONS 60
-#define ITEM_WEIGHT_A 5
-#define ITEM_WEIGHT_B 2
-#define ITEMS_TO_UPDATE 10
+#define MAX_COMPUTATIONS 10 //número de ciclos de leitura
+#define ITEM_WEIGHT_A 5 //peso dos itens da esteira A
+#define ITEM_WEIGHT_B 2 //peso dos itens da esteira B
+#define ITEMS_TO_UPDATE 10 //numero de itens para atualizar o peso total (enunciado traz como 500)
 
 int main(){
 	const char *name_esteira_a = "esteira_A";
@@ -55,7 +56,8 @@ int main(){
 	int total_items = 0;
 	int total_weight = 0;
 	int weighing_cicles = 1;
-	while(weighing_cicles <= MAX_COMPUTATIONS){
+	clock_t start = clock();
+	for(int i = 0; i < MAX_COMPUTATIONS; i++){
 		total_items = *ptr_b + *ptr_a;
 		if(total_items >= ITEMS_TO_UPDATE * weighing_cicles){
 			total_weight += (*ptr_a * ITEM_WEIGHT_A) + (*ptr_b * ITEM_WEIGHT_B);
@@ -66,6 +68,8 @@ int main(){
 				total_items, *ptr_a, *ptr_b, total_weight);
 		sleep(2);
 	}
+	clock_t end = clock();
+	printf("Time: %f\n", (float)(end - start)/CLOCKS_PER_SEC);
 
 	/* remove the shared memory segment */
 	if (shm_unlink(name_esteira_a) == -1) {

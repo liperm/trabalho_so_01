@@ -13,7 +13,9 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/types.h>
+#include <time.h>
 #define SIZE 4096
+#define NUMBER_OF_ITEMS 10
 
 int main(){
 	const char *name = "esteira_B";
@@ -39,13 +41,15 @@ int main(){
  	 *
 	 * Note we must increment the value of ptr after each write.
 	 */
+	clock_t start = clock();
 	int number_of_items = 0;
-	while(1){
+	for(int i = 0; i < NUMBER_OF_ITEMS; i++){
 		number_of_items++;
 		printf("Total items: %d\n", number_of_items);
 		*ptr = number_of_items;
 		sleep(1);
 	}
-
+	clock_t end = clock();
+	printf("Time: %f\n", (float)(end - start)/CLOCKS_PER_SEC);
 	return 0;
 }
